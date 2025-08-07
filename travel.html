@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travel Planner</title>
+
+  <!-- Fonts & Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body class="travel-page">
+  <div class="container">
+
+    <!-- Back Button -->
+    <button onclick="window.location.href='index.html'" class="back-btn">← Back</button>
+    <h1>Plan Your Trip</h1>
+
+    <!-- 🕓 Recent Destinations -->
+    <h2>🕓 Recent Destinations</h2>
+    <div id="recent-posts" class="destination-list"></div>
+
+    <!-- Form -->
+    <form id="destination-form" class="styled-form">
+      <input type="text" id="title" placeholder="Destination Title" required />
+      <input type="date" id="date" required />
+      <textarea id="notes" placeholder="Notes or itinerary..." rows="3"></textarea>
+      <input type="file" id="image" accept="image/*" />
+      <select id="sticker">
+        <option value="">Choose a sticker</option>
+        <option value="🌸">🌸 Cherry Blossom</option>
+        <option value="🏖️">🏖️ Beach Vibes</option>
+        <option value="✈️">✈️ Airplane</option>
+        <option value="🌄">🌄 Mountains</option>
+      </select>
+      <button type="submit">Add Destination</button>
+    </form>
+    <p style="font-size: 0.9rem; color: gray;">📍 Click on the map to choose a location</p>
+
+    <!-- Map -->
+    <div id="map" style="height: 400px; margin: 20px 0;"></div>
+
+    <!-- Destination Cards -->
+    <div id="destinations-list" class="destination-list"></div>
+
+    <!-- 🎒 Packing List -->
+    <h2>🎒 Packing List Generator</h2>
+    <div>
+      <input type="text" id="packing-input" placeholder="Add item..." />
+      <button onclick="addPackingItem()">➕ Add</button>
+      <ul id="packing-list"></ul>
+    </div>
+
+    <!-- 📅 Trip Planner Calendar -->
+    <h2>📅 Trip Planner Calendar</h2>
+    <input type="date" id="calendar-date" />
+    <button onclick="addToCalendar()">📌 Add to Calendar</button>
+    <ul id="calendar-list"></ul>
+
+    <!-- 📸 Gallery -->
+    <h2>📸 Trip Gallery</h2>
+    <div class="gallery">
+      <img src="https://placehold.co/200x150" onclick="openLightbox(this.src)" />
+      <img src="https://placehold.co/201x150" onclick="openLightbox(this.src)" />
+      <img src="https://placehold.co/202x150" onclick="openLightbox(this.src)" />
+    </div>
+    <div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+      <img id="lightbox-img" />
+    </div>
+
+    <!-- 📩 Newsletter Subscribe -->
+    <h2>📩 Subscribe to Travel Updates</h2>
+    <form onsubmit="subscribeNewsletter(event)">
+      <input type="email" placeholder="Your email" required />
+      <button type="submit">Subscribe</button>
+    </form>
+    <p id="newsletter-msg" style="color: green;"></p>
+  </div>
+
+  <!-- 👣 Footer -->
+  <footer class="custom-footer">
+    <p>🌍 Travel Planner © 2025</p>
+    <div class="social-icons">
+      <a href="#">Instagram</a> | <a href="#">YouTube</a> | <a href="#">Contact</a>
+    </div>
+  </footer>
+
+  <!-- 🔝 Scroll to Top -->
+  <button onclick="scrollToTop()" id="topBtn">↑</button>
+
+  <!-- JS Logic -->
+  <script>
+    let selectedLatLng = null;
+    const form = document.getElementById("destination-form");
+    const list = document.getElementById("destinations-list");
+    const recent = document.getElementById("recent-posts");
+
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    map.on('click', function(e) {
+      selectedLatLng = e.latlng;
+      alert(`Location selected: ${selectedLatLng.lat.toFixed(4)}, ${selectedLatLng.lng.toFixed(4)}`);
+    });
+
+    const recentDestinations = [];
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (!selectedLatLng) {
+        alert("Please select a location on the map!");
+        return;
+      }
+
+      const title = document.getElementById("title").value;
+      const date = document.getElementById("date").value;
+      const notes = document.getElementById("notes").value;
+      const sticker = document.getElementById("sticker").value;
+      const imageInput = document.getElementById("image");
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageUrl = event.target.result;
+
+        const marker = L.marker(selectedLatLng).addTo(map);
+        marker.bindPopup(`<b>${title}</b><br>${date}`).openPopup();
+
+        const card = document.createElement("div");
+        card.className = "destination-card";
+        card.innerHTML = `
+          <h3>${sticker} ${title}</h3>
+          <p><strong>Date:</strong> ${date}</p>
+          <p>${notes}</p>
+          ${imageUrl ? `<img src="${imageUrl}" style="max-width: 100%; height: auto;" />` : ""}
+          <button class="delete-btn">🗑️ Delete</button>
+        `;
+        card.querySelector(".delete-btn").addEventListener("click", () => {
+          map.removeLayer(marker);
+          list.removeChild(card);
+        });
+        list.appendChild(card);
+
+        // Recent destinations
+        recentDestinations.unshift(`<p>🧭 <strong>${title}</strong> on ${date}</p>`);
+        if (recentDestinations.length > 3) recentDestinations.pop();
+        recent.innerHTML = recentDestinations.join("");
+
+        form.reset();
+        selectedLatLng = null;
+      };
+
+      if (imageInput.files.length > 0) {
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        reader.onload({ target: { result: "" } });
+      }
+    });
+
+    // Packing List
+    function addPackingItem() {
+      const input = document.getElementById("packing-input");
+      const text = input.value.trim();
+      if (text) {
+        const li = document.createElement("li");
+        li.textContent = text + " ";
+        const del = document.createElement("button");
+        del.textContent = "❌";
+        del.onclick = () => li.remove();
+        li.appendChild(del);
+        document.getElementById("packing-list").appendChild(li);
+        input.value = "";
+      }
+    }
+
+    // Calendar Planner
+    function addToCalendar() {
+      const date = document.getElementById("calendar-date").value;
+      if (date) {
+        const li = document.createElement("li");
+        li.textContent = `📅 Planned date: ${date}`;
+        document.getElementById("calendar-list").appendChild(li);
+      }
+    }
+
+    // Lightbox Gallery
+    function openLightbox(src) {
+      document.getElementById("lightbox-img").src = src;
+      document.getElementById("lightbox").style.display = "block";
+    }
+
+    // Newsletter Subscribe (Mock)
+    function subscribeNewsletter(e) {
+      e.preventDefault();
+      document.getElementById("newsletter-msg").textContent = "✅ You’re subscribed!";
+    }
+
+    // Scroll to top
+    window.onscroll = function () {
+      document.getElementById("topBtn").style.display =
+        document.body.scrollTop > 200 || document.documentElement.scrollTop > 200
+          ? "block"
+          : "none";
+    };
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
