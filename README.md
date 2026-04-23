@@ -1,11 +1,6 @@
-
----
-
 **📌 Project Title:** Travel Planner Blog Web Application
 
 **👩‍💻 Developed by:** Sumana Angajala
-
----
 
 ### 📝 Overview
 
@@ -13,7 +8,6 @@ The **Travel Planner Blog** is a feature-rich, interactive, and fully responsive
 
 This project was developed as the **final task** for the Apex Planet Internship program, and it successfully integrates multiple user-centric features while preserving the original theme and UI consistency.
 
----
 
 ### 🌟 Key Features
 
@@ -64,7 +58,7 @@ This project was developed as the **final task** for the Apex Planet Internship 
    * Works seamlessly across desktop, tablet, and mobile devices.
    * Includes a hamburger-style mobile navigation menu.
 
----
+
 
 ### 🛠️ Technologies Used
 
@@ -72,8 +66,6 @@ This project was developed as the **final task** for the Apex Planet Internship 
 * **CSS3** – Custom styles, responsive design, and transitions
 * **JavaScript** – Dynamic functionality, data handling, and DOM manipulation
 * **Google Maps JavaScript API** – For interactive travel destination mapping
-
----
 
 ### 📌 Project Highlights
 
@@ -83,7 +75,6 @@ This project was developed as the **final task** for the Apex Planet Internship 
 * Lightweight frontend — does not require a backend to run.
 * Deployed using static hosting options (can work with GitHub Pages).
 
----
 
 ### 🧪 How to Use
 
@@ -110,26 +101,6 @@ This project was developed as the **final task** for the Apex Planet Internship 
 5. **Newsletter**
 
    * Enter name and email to mock-subscribe.
-
----
-
-### 🔗 Live Demo (optional)
-
-\[Add your GitHub Pages link here if deployed]
-
----
-
-### 👩‍🎓 About the Developer
-
-Hi! I’m **Sumana Angajala**,
-A passionate developer exploring the world of **Web Development and Data Science**.
-This project reflects my ability to merge functionality, user experience, and responsive design in a real-world scenario.
-
-
-
-
----
-
 ### 📂 Folder Structure (if needed)
 
 ```
